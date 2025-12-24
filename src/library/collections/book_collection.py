@@ -6,8 +6,8 @@ from src.library.book import Book
 
 class BookCollection(Sequence):
 
-    def __init__(self, books=None):
-        self._books: list[Book] = books or []
+    def __init__(self, books: None | list[Book] = None):
+        self._books: list[Book] = books[:] if books else []
 
     def add(self, book: Book):
         self._books.append(book)
@@ -24,7 +24,7 @@ class BookCollection(Sequence):
 
     def __getitem__(self, index: int | slice) -> Book | BookCollection:
         if isinstance(index, slice):
-            return BookCollection(self._books[index])  # return no list anymore! (only book_collection)
+            return BookCollection(self._books[index])  # return no list anymore! (only BookCollection)
         return self._books[index]
 
     def __len__(self) -> int:
