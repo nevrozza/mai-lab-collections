@@ -6,17 +6,16 @@ from src.library.collections.book_collection import ImmutableBookCollection
 
 class IndexDict:
     def __init__(self):
-        self._via_isbn: defaultdict[str, Book] = defaultdict()
-        self._via_author: dict[str, list[Book]] = defaultdict(list)
-        self._via_year: dict[int, list[Book]] = defaultdict(list)
+        self._via_isbn: dict[str, Book] = {}
+        self._via_author: defaultdict[str, list[Book]] = defaultdict(list)
+        self._via_year: defaultdict[int, list[Book]] = defaultdict(list)
 
     def add_book(self, book: Book) -> None:
-        if book not in self._via_isbn:
-            self._via_isbn[book.isbn] = book
-            self._via_author[book.author].append(book)
-            self._via_year[book.year].append(book)
-        else:
+        if book.isbn in self._via_isbn:
             raise KeyError(f"Duplicate book: {book}")
+        self._via_isbn[book.isbn] = book
+        self._via_author[book.author].append(book)
+        self._via_year[book.year].append(book)
 
     def remove_book(self, book: Book) -> None:
         dict_and_keys: list[tuple[dict, str | int]] = [(self._via_year, book.year), (self._via_isbn, book.isbn),
@@ -32,6 +31,9 @@ class IndexDict:
                 if d[key]:
                     return  # Если что-то осталось в списке: оставляем ключ
             del d[key]  # Иначе удаляем его
+
+    def get_all_isbns(self) -> list[str]:
+        return list(self._via_isbn.keys())
 
     def get_by_isbn(self, isbn: str) -> Book | None:
         return self._via_isbn.get(isbn)

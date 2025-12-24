@@ -44,30 +44,27 @@ class Library(LibraryABC):
     def find_by_year(self, year: int) -> ImmutableBookCollection:
         return self._indexes.get_by_year(year)
 
-    def __repr__(self) -> str:
-        return f"Library(books={len(self._books)}, indexes={self._indexes})"
-
-    def __str__(self) -> str:
-        return f"Библиотека содержит {len(self._books)} книг."
+    def get_all_isbns(self) -> list[str]:
+        return self._indexes.get_all_isbns()
 
 
 class LibraryPanel(LibraryABC):
     def __init__(self, library: Library):
-        self._library = library
+        self.library = library
 
     def add_book(self, book: Book):
         try:
-            self._library.add_book(book)
+            self.library.add_book(book)
             print(f"Добавлена книга: {book.title}")
         except KeyError:
             print(f"Книга с таким ISBN: {book.isbn} уже добавлена")
 
     def remove_book(self, book: Book):
-        self._library.remove_book(book)
+        self.library.remove_book(book)
         print(f"Удалена книга: {book.title}")
 
     def find_by_isbn(self, isbn: str) -> Book | None:
-        book = self._library.find_by_isbn(isbn)
+        book = self.library.find_by_isbn(isbn)
         if book:
             print(f"Найдена книга по ISBN: {book.title}")
         else:
@@ -75,7 +72,7 @@ class LibraryPanel(LibraryABC):
         return book
 
     def find_by_author(self, author: str) -> ImmutableBookCollection:
-        books = self._library.find_by_author(author)
+        books = self.library.find_by_author(author)
         if books:
             print(f"Книги этого автора: {[book.title for book in books]}")
         else:
@@ -83,7 +80,7 @@ class LibraryPanel(LibraryABC):
         return books
 
     def find_by_year(self, year: int) -> ImmutableBookCollection:
-        books = self._library.find_by_year(year)
+        books = self.library.find_by_year(year)
         if books:
             print(f"Книги {year} года: {[book.title for book in books]}")
         else:
