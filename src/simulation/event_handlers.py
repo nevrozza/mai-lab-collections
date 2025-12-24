@@ -59,14 +59,16 @@ class SimulationEventHandlers:
         )
         self.panel.add_book(fake_book)
 
+    def _library_not_empty(self) -> bool:  # была бы лямбдой, но mypy не разрешил =/
+        return len(self.panel.library.get_all_isbns()) > 0
+
     def get_event_handlers(self) -> dict:
-        library_not_empty = bool(self.panel.library.get_all_isbns())
         event_handlers = {
             Event.ADD_BOOK: (lambda: True, self._add_book_handler),
-            Event.REMOVE_RANDOM_BOOK: (lambda: library_not_empty, self._remove_random_book_handler),
-            Event.SEARCH_BY_AUTHOR: (lambda: library_not_empty, self._search_by_author_handler),
-            Event.SEARCH_BY_YEAR: (lambda: library_not_empty, self._search_by_year_handler),
-            Event.SEARCH_BY_ISBN: (lambda: library_not_empty, self._search_by_isbn_handler),
-            Event.TRY_ADD_ISBN_DUPLICATE: (lambda: library_not_empty, self._try_add_isbn_duplicate_handler)
+            Event.REMOVE_RANDOM_BOOK: (self._library_not_empty, self._remove_random_book_handler),
+            Event.SEARCH_BY_AUTHOR: (self._library_not_empty, self._search_by_author_handler),
+            Event.SEARCH_BY_YEAR: (self._library_not_empty, self._search_by_year_handler),
+            Event.SEARCH_BY_ISBN: (self._library_not_empty, self._search_by_isbn_handler),
+            Event.TRY_ADD_ISBN_DUPLICATE: (self._library_not_empty, self._try_add_isbn_duplicate_handler)
         }
         return event_handlers
