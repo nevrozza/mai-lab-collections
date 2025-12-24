@@ -1,0 +1,34 @@
+from collections.abc import Sequence
+from typing import overload
+
+from src.library.book import Book
+
+
+class BookCollection(Sequence):
+
+    def __init__(self, books: None | Sequence[Book] = None):
+        self._books: list[Book] = list(books) if books else []
+
+    def add(self, book: Book):
+        self._books.append(book)
+
+    def remove(self, book: Book):
+        self._books.remove(book)
+
+    # Кринжанул после котлина (про перегруз методов)
+    @overload
+    def __getitem__(self, index: int, /) -> Book: ...
+
+    @overload
+    def __getitem__(self, index: slice, /) -> BookCollection: ...
+
+    def __getitem__(self, index: int | slice) -> Book | BookCollection:
+        if isinstance(index, slice):
+            return BookCollection(self._books[index])  # return no list anymore! (only BookCollection)
+        return self._books[index]
+
+    def __len__(self) -> int:
+        return len(self._books)
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self._books})"
