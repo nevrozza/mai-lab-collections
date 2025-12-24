@@ -36,6 +36,8 @@ collections
 │   └── main.py								# Входная точка в программу
 └── tests									# Тесты для всего
 ```
+## Kartinka
+<img width="1787" height="1151" alt="image" src="https://github.com/user-attachments/assets/80c6f8f2-060d-455d-a310-50fc37e16473" />
 
 
 ## Quick start
