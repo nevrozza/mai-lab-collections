@@ -47,7 +47,7 @@ def test_book_mutability():
         raise AssertionError
 
 
-def test_library():
+def test_library_add_and_find_books():
     lib = Library()
     book1 = generate_random_book()
     book2 = generate_random_book()
@@ -66,18 +66,36 @@ def test_library():
     assert isinstance(by_year, ImmutableBookCollection)
     assert book1 in by_year
 
+
+def test_library_prohibit_duplicates_error():
+    lib = Library()
+    book = generate_random_book()
+    lib.add_book(book)
+
     duplicate = generate_random_book()
-    duplicate.isbn = book1.isbn
+    duplicate.isbn = book.isbn
     with pytest.raises(KeyError, match="Duplicate book"):
         lib.add_book(duplicate)
+
+
+def test_library_remove_book_check():
+    lib = Library()
+    book1 = generate_random_book()
+    book2 = generate_random_book()
+    lib.add_book(book1)
+    lib.add_book(book2)
 
     lib.remove_book(book1)
     assert lib.find_by_isbn(book1.isbn) is None
     assert book1 not in lib.find_by_author(book1.author)
     assert book1 not in lib.find_by_year(book1.year)
 
+
+def test_library_remove_nonexistent_book_error():
+    lib = Library()
+    book = generate_random_book()
     with pytest.raises(ValueError):
-        lib.remove_book(book1)
+        lib.remove_book(book)
 
 
 def test_library_empty_state():
