@@ -6,8 +6,8 @@ from src.library.book import Book
 
 class BookCollection(Sequence):
 
-    def __init__(self, books: None | list[Book] = None):
-        self._books: list[Book] = books[:] if books else []
+    def __init__(self, books: None | Sequence[Book] = None):
+        self._books: list[Book] = list(books) if books else []
 
     def add(self, book: Book):
         self._books.append(book)
