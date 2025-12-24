@@ -3,7 +3,7 @@ from enum import Enum, auto
 
 from src.library.book import Book, Genre
 from src.library.library import LibraryPanel
-from src.simulation.utils import generate_random_book
+from src.simulation.utils import generate_random_book, get_isbn, get_random_title
 
 
 class Event(Enum):
@@ -13,6 +13,8 @@ class Event(Enum):
     SEARCH_BY_YEAR = auto()
     SEARCH_BY_ISBN = auto()
     TRY_ADD_ISBN_DUPLICATE = auto()
+    TRY_GET_UNEXISTING_BOOK = auto()
+    CHANGE_TITLE = auto()
 
 
 class SimulationEventHandlers:
@@ -59,7 +61,27 @@ class SimulationEventHandlers:
         )
         self.panel.add_book(fake_book)
 
-    def _library_not_empty(self) -> bool:  # была бы лямбдой, но mypy не разрешил =/
+    def _try_get_unexisting_book_handler(self) -> None:
+        all_existing_isbns = self.panel.library.get_all_isbns()
+        if len(all_existing_isbns) != 100000:  # TODO
+            isbn: str = ""
+            while isbn in all_existing_isbns:
+                isbn = get_isbn()
+            self.panel.find_by_isbn(isbn)
+        else:
+            print("Все ISBN заняты")
+
+    def _change_title_handler(self) -> None:
+        book = self._unsafe_get_random_existing_book()
+        previous_title = book.title
+        book.title = get_random_title()
+        new_book = self.panel.library.find_by_isbn(book.isbn)
+        if new_book:
+            print(f"Изменено название книги: {previous_title} -> {new_book.title}")
+        else:
+            raise RuntimeError("Книга не была найдена (а должна была)")
+
+    def _library_not_empty(self) -> bool:  # была бы лямбдой, но MyPy не разрешил =/
         return len(self.panel.library.get_all_isbns()) > 0
 
     def get_event_handlers(self) -> dict:
@@ -69,6 +91,8 @@ class SimulationEventHandlers:
             Event.SEARCH_BY_AUTHOR: (self._library_not_empty, self._search_by_author_handler),
             Event.SEARCH_BY_YEAR: (self._library_not_empty, self._search_by_year_handler),
             Event.SEARCH_BY_ISBN: (self._library_not_empty, self._search_by_isbn_handler),
-            Event.TRY_ADD_ISBN_DUPLICATE: (self._library_not_empty, self._try_add_isbn_duplicate_handler)
+            Event.TRY_ADD_ISBN_DUPLICATE: (self._library_not_empty, self._try_add_isbn_duplicate_handler),
+            Event.TRY_GET_UNEXISTING_BOOK: (lambda: True, self._try_get_unexisting_book_handler),
+            Event.CHANGE_TITLE: (self._library_not_empty, self._change_title_handler)
         }
         return event_handlers
