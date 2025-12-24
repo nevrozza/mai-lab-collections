@@ -16,7 +16,7 @@ class IndexDict:
             self._via_author[book.author].append(book)
             self._via_year[book.year].append(book)
         else:
-            raise RuntimeError(f"Duplicate book: {book}")
+            raise KeyError(f"Duplicate book: {book}")
 
     def remove_book(self, book: Book) -> None:
         dict_and_keys: list[tuple[dict, str | int]] = [(self._via_year, book.year), (self._via_isbn, book.isbn),

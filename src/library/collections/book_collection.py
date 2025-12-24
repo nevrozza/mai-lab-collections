@@ -40,11 +40,11 @@ class ImmutableBookCollection(BaseBookCollection):
 
 
 class BookCollection(BaseBookCollection):
-    def _make_sliced(self, books_slice: Sequence[Book]) -> BookCollection:
-        return BookCollection(books_slice)
+    def __init__(self):
+        self._books: list[Book] = []
 
-    def __init__(self, books: None | Sequence[Book] = None):
-        self._books: list[Book] = list(books) if books else []
+    def _make_sliced(self, books_slice: Sequence[Book]) -> ImmutableBookCollection:
+        return ImmutableBookCollection(books_slice)
 
     def add(self, book: Book):
         self._books.append(book)
