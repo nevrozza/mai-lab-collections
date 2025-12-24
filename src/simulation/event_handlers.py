@@ -14,7 +14,8 @@ class Event(Enum):
     SEARCH_BY_ISBN = auto()
     TRY_ADD_ISBN_DUPLICATE = auto()
     TRY_GET_UNEXISTING_BOOK = auto()
-    CHANGE_TITLE = auto()
+    CHANGE_BOOK_TITLE = auto()
+    TRY_REMOVE_UNEXISTING_BOOK = auto()
 
 
 class SimulationEventHandlers:
@@ -71,7 +72,7 @@ class SimulationEventHandlers:
         else:
             print("Все ISBN заняты")
 
-    def _change_title_handler(self) -> None:
+    def _change_book_title_handler(self) -> None:
         book = self._unsafe_get_random_existing_book()
         previous_title = book.title
         book.title = get_random_title()
@@ -80,6 +81,10 @@ class SimulationEventHandlers:
             print(f"Изменено название книги: {previous_title} -> {new_book.title}")
         else:
             raise RuntimeError("Книга не была найдена (а должна была)")
+
+    def _try_remove_unexisting_book_handler(self) -> None:
+        book = generate_random_book()
+        self.panel.remove_book(book)
 
     def _library_not_empty(self) -> bool:  # была бы лямбдой, но MyPy не разрешил =/
         return len(self.panel.library.get_all_isbns()) > 0
@@ -93,6 +98,7 @@ class SimulationEventHandlers:
             Event.SEARCH_BY_ISBN: (self._library_not_empty, self._search_by_isbn_handler),
             Event.TRY_ADD_ISBN_DUPLICATE: (self._library_not_empty, self._try_add_isbn_duplicate_handler),
             Event.TRY_GET_UNEXISTING_BOOK: (lambda: True, self._try_get_unexisting_book_handler),
-            Event.CHANGE_TITLE: (self._library_not_empty, self._change_title_handler)
+            Event.CHANGE_BOOK_TITLE: (self._library_not_empty, self._change_book_title_handler),
+            Event.TRY_REMOVE_UNEXISTING_BOOK: (lambda: True, self._try_remove_unexisting_book_handler)
         }
         return event_handlers

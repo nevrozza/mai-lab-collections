@@ -28,8 +28,10 @@ class Library(LibraryABC):
         self._indexes = IndexDict()
 
     def add_book(self, book: Book):
-        self._indexes.add_book(book)  # можно словить KeyError
+        if book.isbn in self._indexes.get_all_isbns():
+            raise KeyError(f"Duplicate book: {book}")
         self._books.add(book)
+        self._indexes.add_book(book)
 
     def remove_book(self, book: Book):
         self._books.remove(book)
@@ -60,8 +62,11 @@ class LibraryPanel(LibraryABC):
             print(f"Книга с таким ISBN: {book.isbn} уже добавлена")
 
     def remove_book(self, book: Book):
-        self.library.remove_book(book)
-        print(f"Удалена книга: {book.title}")
+        try:
+            self.library.remove_book(book)
+            print(f"Удалена книга: {book.title}")
+        except ValueError:
+            print("Этой книги не существует, чтобы удалить её 0_о")
 
     def find_by_isbn(self, isbn: str) -> Book | None:
         book = self.library.find_by_isbn(isbn)

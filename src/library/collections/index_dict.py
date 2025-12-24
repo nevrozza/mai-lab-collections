@@ -11,8 +11,6 @@ class IndexDict:
         self._via_year: defaultdict[int, list[Book]] = defaultdict(list)
 
     def add_book(self, book: Book) -> None:
-        if book.isbn in self._via_isbn:
-            raise KeyError(f"Duplicate book: {book}")
         self._via_isbn[book.isbn] = book
         self._via_author[book.author].append(book)
         self._via_year[book.year].append(book)
