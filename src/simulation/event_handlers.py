@@ -19,11 +19,26 @@ class Event(Enum):
 
 
 class SimulationEventHandlers:
+    """
+    Предоставляет обработчики событий для симуляции работы библиотеки.
+
+    Каждое событие представлено парой: (условие выполнения `condition`, обработчик).
+
+    Один из примеров использования `conditions`:
+     - они гарантируют, что операции, требующие существующих книг
+       (например, удаление), вызываются только при непустой библиотеке.
+
+    Все обработчики работают через LibraryPanel – ошибки не приводят
+    к падению симуляции, а отображаются как сообщения.
+    """
 
     def __init__(self, panel: LibraryPanel):
         self.panel = panel
 
     def _unsafe_get_random_existing_book(self) -> Book:
+        """
+        Unsafe, т.к. функция думает, что библиотека не пуста (выполнен condition из словаря)
+        """
         isbn = random.choice(list(self.panel.library.get_all_isbns()))
         book = self.panel.library.find_by_isbn(isbn)
         if book:

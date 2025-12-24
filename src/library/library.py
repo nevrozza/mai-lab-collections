@@ -6,6 +6,7 @@ from src.library.collections.index_dict import IndexDict
 
 
 class LibraryABC(ABC):
+    """Абстрактный интерфейс библиотеки (единообразие Library и LibraryPanel)"""
     @abstractmethod
     def add_book(self, book: Book): ...
 
@@ -23,6 +24,12 @@ class LibraryABC(ABC):
 
 
 class Library(LibraryABC):
+    """
+    Основная реализация библиотеки.
+
+    Хранит книги и поддерживает индексы по ISBN, автору и году.
+    Запрещает дубликаты ISBN.
+    """
     def __init__(self):
         self._books = BookCollection()
         self._indexes = IndexDict()
@@ -51,6 +58,12 @@ class Library(LibraryABC):
 
 
 class LibraryPanel(LibraryABC):
+    """
+    Обёртка над Library с обработкой ошибок и выводом сообщений. Что-то типа интерфейса, если бы это было CLI.
+
+    Не выбрасывает исключения при ожидаемых ошибках (дубликат, отсутствующая книга),
+    а вместо этого печатает понятные сообщения.
+    """
     def __init__(self, library: Library):
         self.library = library
 

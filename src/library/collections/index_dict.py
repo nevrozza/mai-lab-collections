@@ -5,6 +5,12 @@ from src.library.collections.book_collection import ImmutableBookCollection
 
 
 class IndexDict:
+    """
+    Индексирует книги по ISBN, автору и году.
+
+    При удалении книги она удаляется из всех словарей,
+    а пустые ключи (автор/год без книг) автоматически удаляются.
+    """
     def __init__(self):
         self._via_isbn: dict[str, Book] = {}
         self._via_author: defaultdict[str, list[Book]] = defaultdict(list)
