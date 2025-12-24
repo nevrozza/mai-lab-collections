@@ -4,7 +4,7 @@ from src.library.library import Library, LibraryPanel
 from src.simulation.event_handlers import SimulationEventHandlers, Event
 
 
-def run_simulation(steps: int = 15, seed: int | None = None) -> None:
+def run_simulation(steps: int = 15, seed: int | None = None) -> tuple[Library, int, int]:
     if seed:
         random.seed(seed)
     print(f"Симуляция (seed={seed})")
@@ -33,6 +33,7 @@ def run_simulation(steps: int = 15, seed: int | None = None) -> None:
 
     print(f"\nВот и всё...\nВ библиотеке осталось {len(library.get_all_isbns())} книг(а/и)")
     print(f"Шагов пропущено: {skipped_operations_count}, Ошибок не поймано: {uncaught_errors_count}")
+    return library, skipped_operations_count, uncaught_errors_count
 
 
 if __name__ == "__main__":

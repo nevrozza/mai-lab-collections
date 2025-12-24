@@ -88,6 +88,18 @@ def test_library_empty_state():
     assert lib.find_by_isbn("any") is None
 
 
+def check_output(
+        do, text: str
+):
+    captured_output = StringIO()
+    old_stdout = sys.stdout
+    sys.stdout = captured_output
+    do()
+    output = captured_output.getvalue()
+    assert text in output
+    sys.stdout = old_stdout
+
+
 def test_library_panel():
     lib = Library()
     panel = LibraryPanel(lib)
@@ -96,22 +108,16 @@ def test_library_panel():
     panel.add_book(book)
     assert lib.find_by_isbn(book.isbn) is not None
 
-    captured_output = StringIO()
-    old_stdout = sys.stdout
-    sys.stdout = captured_output
-    panel.add_book(book)  # дубликат
-    sys.stdout = old_stdout
-
-    output = captured_output.getvalue()
-    assert "уже добавлена" in output
+    check_output(
+        do=lambda: panel.add_book(book),  # дубликат
+        text="уже добавлена"
+    )
 
     fake_book = generate_random_book()
-    captured_output = StringIO()
-    sys.stdout = captured_output
-    panel.remove_book(fake_book)
-    sys.stdout = old_stdout
-    assert "Этой книги не существует" in captured_output.getvalue()
-
+    check_output(
+        do=lambda: panel.remove_book(fake_book),
+        text="Этой книги не существует"
+    )
     panel.find_by_isbn("missing")  # не падает..
 
     by_author = panel.find_by_author(book.author)
