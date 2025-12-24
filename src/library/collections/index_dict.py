@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 from src.library.book import Book
+from src.library.collections.book_collection import ImmutableBookCollection
 
 
 class IndexDict:
@@ -35,19 +36,19 @@ class IndexDict:
     def get_by_isbn(self, isbn: str) -> Book | None:
         return self._via_isbn.get(isbn)
 
-    def get_by_author(self, author: str) -> list[Book]:
-        return self._via_author.get(author, [])
+    def get_by_author(self, author: str) -> ImmutableBookCollection:
+        return ImmutableBookCollection(self._via_author.get(author, []))
 
-    def get_by_year(self, year: int) -> list[Book] | None:
-        return self._via_year.get(year, [])
+    def get_by_year(self, year: int) -> ImmutableBookCollection:
+        return ImmutableBookCollection(self._via_year.get(year, []))
 
-    def __getitem__(self, key: str | int) -> Book | list[Book]:
+    def __getitem__(self, key: str | int) -> Book | ImmutableBookCollection:
         if isinstance(key, str):
             if key in self._via_isbn:
                 return self._via_isbn[key]
             elif key in self._via_author:
-                return self._via_author[key]
+                return ImmutableBookCollection(self._via_author[key])
         elif isinstance(key, int):
             if key in self._via_year:
-                return self._via_year[key]
+                return ImmutableBookCollection(self._via_year[key])
         raise KeyError(f"Key {key} not found.")
