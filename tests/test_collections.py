@@ -2,6 +2,7 @@ import random
 
 import pytest
 
+from src.library.book import Genre, Book
 from src.library.collections.book_collection import BookCollection, ImmutableBookCollection
 from src.library.collections.index_dict import IndexDict
 from src.simulation.utils import generate_random_book
@@ -30,6 +31,17 @@ def test_book_collection():
     assert len(bc) == 0
     with pytest.raises(ValueError):
         bc.remove(random.choice(imbc))
+
+
+def test_book_collection_empty_slices():
+    bc = BookCollection()
+    imbc = ImmutableBookCollection()
+
+    assert isinstance(bc[100:200], ImmutableBookCollection)
+    assert len(bc[100:200]) == 0
+
+    assert isinstance(imbc[5:10], ImmutableBookCollection)
+    assert len(imbc[5:10]) == 0
 
 
 def test_index_dict():
@@ -65,3 +77,31 @@ def test_index_dict():
         assert book == idx.get_by_isbn(book.isbn)
     else:
         raise AssertionError
+
+
+def test_index_dict_clean_key_on_last_value():
+    idx = IndexDict()
+    book = Book("Test", "Solo", 1999, Genre.POETRY, "123")
+    idx.add_book(book)
+
+    assert "Solo" in idx._via_author
+    assert 1999 in idx._via_year
+
+    idx.remove_book(book)
+
+    assert "Solo" not in idx._via_author
+    assert 1999 not in idx._via_year
+    assert "123" not in idx._via_isbn
+
+
+def test_collections_empty_state():
+    bc = BookCollection()
+    assert len(bc) == 0
+    idx = IndexDict()
+    author = idx.get_by_author("xxx")
+    year = idx.get_by_year(2077)
+    assert isinstance(author, ImmutableBookCollection)
+    assert isinstance(year, ImmutableBookCollection)
+    assert idx.get_by_isbn("xxx") is None
+    assert len(author) == 0
+    assert len(year) == 0
