@@ -5,6 +5,16 @@ from src.simulation.event_handlers import SimulationEventHandlers, Event
 
 
 def run_simulation(steps: int = 15, seed: int | None = None) -> tuple[Library, int, int]:
+    """
+    Запускает симуляцию работы библиотеки на заданное число шагов.
+
+    События (добавление, удаление, поиск и т.д.) выбираются случайно.
+    При указанном seed поведение детерминировано.
+
+    :param steps: количество шагов симуляции
+    :param seed: seed для random. По дефолту - None
+    :return: tuple[Library, int, int]: (Библиотека, кол-во пропущенных шагов, кол-во непойманных ошибок)
+    """
     if seed:
         random.seed(seed)
     print(f"Симуляция (seed={seed})")

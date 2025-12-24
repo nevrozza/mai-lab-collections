@@ -6,6 +6,12 @@ from src.library.book import Book
 
 
 class BaseBookCollection(Sequence, ABC):
+    """
+    Интерфейс для коллекций книг.
+
+    Срезы всегда возвращаются как новый экземпляр коллекции (никогда как list).
+    Конкретный тип результата среза определяется в абстрактном методе _make_sliced.
+    """
     _books: Sequence[Book]
 
     @abstractmethod
@@ -32,6 +38,14 @@ class BaseBookCollection(Sequence, ABC):
 
 
 class ImmutableBookCollection(BaseBookCollection):
+    """
+    Неизменяемая коллекция книг.
+
+    Хранит книги в виде tuple, что гарантирует безопасность от внешних изменений.
+    Подходит для возврата из публичных методов библиотеки.
+    BOOKS - MUTABLE!! TODO
+    """
+
     def __init__(self, books: None | Sequence[Book] = None):
         self._books: Sequence[Book] = tuple(books) if books else ()
 
@@ -40,6 +54,12 @@ class ImmutableBookCollection(BaseBookCollection):
 
 
 class BookCollection(BaseBookCollection):
+    """
+    Изменяемая коллекция книг.
+
+    Хранит книги в виде list, но инкапсулирует его.
+    """
+
     def __init__(self):
         self._books: list[Book] = []
 
