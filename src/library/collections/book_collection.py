@@ -15,6 +15,7 @@ class BookCollection(Sequence):
     def remove(self, book: Book):
         self._books.remove(book)
 
+    # Кринжанул после котлина (про перегруз методов)
     @overload
     def __getitem__(self, index: int, /) -> Book: ...
 
